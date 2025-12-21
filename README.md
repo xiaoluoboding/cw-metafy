@@ -1,4 +1,4 @@
-# Metafy on Vercel
+# Metafy on Cloudflare
 
 > Easily scrape metadata from websites as a service.
 
@@ -7,7 +7,7 @@
 Enter a valid `$URL` as params
 
 ```bash
-curl https://metafy.xiaoluoboding.workers.dev/?url=$URL
+curl https://metafy.indiehacker.workers.dev/?url=$URL
 ```
 
 ## Example
@@ -15,42 +15,77 @@ curl https://metafy.xiaoluoboding.workers.dev/?url=$URL
 ### Input
 
 ```bash
-curl https://metafy.xiaoluoboding.workers.dev/?url=https://onetab.group
+curl https://metafy.indiehacker.workers.dev/?url=https://sidespace.app
 ```
 
 ### Output
 
 ```json
 {
-  "title": "One Tab Group: Your all-in-one tab/tab group manager for Chrome.",
-  "description": "onetab.group is a chrome extension that allows you to manage your tabs & tab groups in one place. One-click to aggregate all tabs & tab groups into one session.",
-  "author": "",
-  "image": "https://onetab.group/preview.jpg",
-  "feeds": [],
-  "date": "",
-  "lang": "",
-  "logo": "https://onetab.group/logo.png",
-  "video": "",
-  "keywords": "",
-  "jsonld": "",
-  "url": "https://www.onetab.group/",
-  "type": "link"
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "title": "Side Space | Your AI Agent for Smart Browsing. | sidespace.app",
+    "description": "Research, summarize, and organize, less talk, more action . Side Space’s contextual AI works inside your side panel to automate your workflow.",
+    "author": "",
+    "publisher": "Side Space",
+    "image": "https://www.sidespace.app/preview.webp",
+    "feeds": [],
+    "date": "",
+    "lang": "en",
+    "logo": "https://www.sidespace.app/favicon.svg",
+    "video": "",
+    "keywords": "",
+    "jsonld": {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@id": "https://www.sidespace.app/#website",
+          "@type": "WebSite",
+          "description": "Research, summarize, and organize, less talk, more action . Side Space’s contextual AI works inside your side panel to automate your workflow.",
+          "inLanguage": "en",
+          "name": "sidespace.app",
+          "url": "https://www.sidespace.app/"
+        },
+        {
+          "@id": "https://www.sidespace.app/#webpage",
+          "@type": "WebPage",
+          "description": "Research, summarize, and organize, less talk, more action . Side Space’s contextual AI works inside your side panel to automate your workflow.",
+          "url": "https://www.sidespace.app/",
+          "isPartOf": {
+            "@id": "https://www.sidespace.app/#website"
+          },
+          "potentialAction": [
+            {
+              "@type": "ReadAction",
+              "target": [
+                "https://www.sidespace.app/"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "link": "https://www.sidespace.app/",
+    "domain": "https://www.sidespace.app",
+    "type": "link"
+  }
 }
 ```
 
 ## Deploy your own instance
 
-Deploy your `Metafy` on your own instance with one-click.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fone-tab-group%2Fvercel-metafy)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/xiaoluoboding/cw-metafy)
 
 ## Tech Stack
 
-- [vercel](https://vercel.com/) - Develop. Preview. Ship. For the best frontend teams.
-- [metascraper](https://metascraper.js.org/) - metascraper, easily scrape metadata from an article on the web.
-- [typescript](https://www.typescriptlang.org/) - Typed JavaScript at Any Scale.
-- [got](https://github.com/sindresorhus/got) - 🌐 Human-friendly and powerful HTTP request library for Node.js
-- [esno](https://github.com/antfu/esno) - TypeScript / ESNext node runtime powered by esbuild
+- [Cloudflare Workers](https://workers.cloudflare.com/) - Deploy serverless code instantly across the globe
+- [Hono](https://hono.dev/) - Ultrafast web framework for the Edges
+- [TypeScript](https://www.typescriptlang.org/) - Typed JavaScript at Any Scale
+- [Vitest](https://vitest.dev/) - Next generation testing framework
+- [Vite](https://vitejs.dev/) - Next generation frontend tooling
+- [lodash-es](https://lodash.com/) - Modern JavaScript utility library
+- [DayJS](https://day.js.org/) - Fast 2kB alternative to Moment.js
 
 ## License
 
