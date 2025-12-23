@@ -1,13 +1,6 @@
 import { Hono } from 'hono'
 import { env } from 'hono/adapter'
-import { TidyURL } from 'tidy-url'
-import { isString } from 'lodash-es'
-
-import Scraper from './scraper'
-import { generateErrorJSONResponse } from './json-response'
-import { linkType } from './link-type'
-import { scraperRules } from './scraper-rules'
-import { checkIsRepo, getOriginalOGImageOfRepo } from './ogimage-repo'
+import { getVideoCaptionsFromCaptionExtractor } from './youtube-transcript'
 
 export interface Response<T> {
   code: number
@@ -34,10 +27,6 @@ const app = new Hono()
 app.get('/', async (c) => {
   const { API_TOKEN: apiToken } = env<{ API_TOKEN: string }>(c)
   let url = c.req.query('url')
-  const cleanUrl = c.req.query('cleanUrl')
-
-  const scraper = new Scraper()
-  let response: Record<string, ScrapeResponse>
 
   const Authorization = c.req.header('Authorization')
   if (apiToken) {
@@ -68,70 +57,41 @@ app.get('/', async (c) => {
     url = 'https://' + url
   }
 
-  try {
-    const requestedUrl = new URL(url)
+  // Get video captions from @/youtube-transcript.ts
+  const youtubeRegex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  const youtubeMatch = url.match(youtubeRegex)
 
-    // If the url is a reddit url, use old.reddit.com because it has much
-    // more information when scraping
-    if (url.includes('reddit.com')) {
-      requestedUrl.hostname = 'old.reddit.com'
-      url = requestedUrl.toString()
+  if (youtubeMatch) {
+    const videoId = youtubeMatch[1]
+    const lang = c.req.query('lang') || 'en'
+
+    try {
+      console.log(
+        `[Caption Extractor] Fetching transcript for video ${videoId}`
+      )
+
+      const response = await getVideoCaptionsFromCaptionExtractor(videoId, lang)
+
+      return c.json(response)
+    } catch (error) {
+      console.error('[Caption Extractor] Error:', error)
+      return c.json({
+        code: 500,
+        message: 'Failed to fetch transcript',
+        data: {
+          error: error instanceof Error ? error.message : String(error),
+        },
+      } as Response<{ error: string }>)
     }
-
-    await scraper.fetch(url)
-  } catch (error) {
-    return generateErrorJSONResponse(error, url)
   }
 
-  try {
-    // Get metadata using the rules defined in `src/scraper-rules.ts`
-    response = await scraper.getMetadata(scraperRules)
-
-    const unshortenedUrl = scraper.response.url
-
-    // Add cleaned url
-    if (cleanUrl) {
-      const cleanedUrl = TidyURL.clean(unshortenedUrl || url)
-      response.cleaned_url = cleanedUrl.url
-    }
-
-    // Add unshortened url
-    response.link = unshortenedUrl
-
-    // Add domain
-    const { origin } = new URL(unshortenedUrl)
-    response.domain = origin
-
-    // Add url type
-    response.type = linkType(url, false)
-
-    if (isString(response.logo)) {
-      if (response.logo && !response.logo.match(/^[a-zA-Z]+:\/\//)) {
-        response.logo = `${origin}${response.logo}`
-      }
-    }
-
-    if (checkIsRepo(url)) {
-      const originalOGImage = await getOriginalOGImageOfRepo(url)
-      response.originalOGImage = originalOGImage
-    }
-
-    // Parse JSON-LD
-    if (response?.jsonld) {
-      response.jsonld = JSON.parse(response.jsonld as string)
-    }
-  } catch (error) {
-    return c.json({
-      code: 500,
-      message: 'Internal Server Error',
-    } as Response<null>)
-  }
-
+  // If not a YouTube URL, return error
   return c.json({
-    code: 200,
-    message: 'OK',
-    data: response as ScrapeResponse,
-  } as Response<ScrapeResponse>)
+    code: 400,
+    message: 'Bad Request',
+    data: 'Only YouTube URLs are supported',
+  } as Response<string>)
 })
 
 export default app
