@@ -1,0 +1,35 @@
+{
+  "name": "cw-metafy",
+  "version": "0.1.0",
+  "private": true,
+  "author": {
+    "name": "Robert Shaw",
+    "url": "https://robertshaw.id"
+  },
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev --port 7878",
+    "test": "vitest",
+    "serve:test": "serve test -p 1234"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240423.0",
+    "@types/lodash-es": "^4.17.12",
+    "serve": "^14.2.3",
+    "typescript": "^5.4.5",
+    "vite": "^4.5.3",
+    "vitest": "^0.34.6",
+    "wrangler": "^3.52.0"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.11",
+    "file-extension": "^4.0.5",
+    "hono": "^4.2.8",
+    "html-entities": "^2.5.2",
+    "isomorphic-dompurify": "^1.13.0",
+    "lodash-es": "^4.17.21",
+    "tidy-url": "^1.16.0",
+    "top-user-agents": "^1.0.66",
+    "unique-random-array": "^3.0.0"
+  }
+}
